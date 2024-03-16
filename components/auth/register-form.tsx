@@ -26,14 +26,21 @@ export const RegisterForm = () => {
   const form = useForm<z.infer<typeof SignupSchema>>({
     resolver: zodResolver(SignupSchema),
     defaultValues: {
+      name: "",
       email: "",
       password: "",
     },
   });
   const onSubmit = (values: z.infer<typeof SignupSchema>) => {
+    setError("");
+    setSuccess("");
     startTransition(() => {
       signup(values)
         .then((result: any) => {
+          if (result.error) {
+            setError(result.error!);
+            return;
+          }
           setSuccess(result.success);
         })
         .catch((err: any) => {
@@ -41,6 +48,7 @@ export const RegisterForm = () => {
         });
     });
   };
+
   return (
     <CardWrapper
       headerLabel="Create an account"
