@@ -19,6 +19,7 @@ import { Input } from "../ui/input";
 import { FormError } from "../form-error";
 import { FormSuccess } from "../form-success";
 import { login } from "@/actions/login";
+import { useSearchParams } from "next/navigation";
 export const LoginForm = () => {
   const [isPending, startTransition] = useTransition();
   const [success, setSuccess] = useState<string | undefined>("");
@@ -30,6 +31,11 @@ export const LoginForm = () => {
       password: "",
     },
   });
+  const searchParams = useSearchParams();
+  const urlError =
+    searchParams.get("error") === "OAuthAccountNotLinked"
+      ? "Email already in use with different Provider"
+      : "";
   const onSubmit = (values: z.infer<typeof LoginSchema>) => {
     startTransition(() => {
       login(values)
@@ -91,7 +97,7 @@ export const LoginForm = () => {
               )}
             />
           </div>
-          {error && <FormError message={error} />}
+          {error && <FormError message={error || urlError} />}
           {success && <FormSuccess message={success} />}
           <Button type="submit" className="w-full" disabled={isPending}>
             Login
